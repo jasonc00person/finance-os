@@ -1,0 +1,186 @@
+<meta charset="utf-8">
+<title>__BUSINESS_NAME__ Balance Sheet</title>
+<style>
+  :root {
+    --paper: #F6F2E8; --paper-deep: #EFEADC; --ink: #211E16; --muted: #7B7360;
+    --faint: #A39A83; --green: #1B4D3B; --green-soft: #E7EDE5; --rust: #8E3B2C;
+    --rust-soft: #F2E4DC; --gold: #8A6A1F; --gold-soft: #F0E7CC;
+    --line: #DDD5C2; --line-strong: #B9AE93; --hair: #CFC6AE;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body { background: var(--paper); color: var(--ink); margin: 0; }
+  body::before {  /* paper grain */
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 3; opacity: .5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .41 0 0 0 0 .33 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 46px 24px 80px;
+    font: 400 16.5px/1.6 var(--serif); }
+
+  .mast { position: relative; text-align: center; margin-bottom: 26px;
+    animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .rule { border: 0; border-top: 1px solid var(--ink); margin: 0; }
+  .rule.dbl { border-top: 3px double var(--ink); }
+  .eyebrow { font-size: 12.5px; letter-spacing: .34em; text-transform: uppercase;
+    color: var(--muted); margin: 14px 0 2px; text-indent: .34em; }
+  h1 { font: 400 clamp(34px, 7vw, 46px)/1.12 var(--serif); margin: 2px 0 4px; letter-spacing: .01em; }
+  .asof { color: var(--muted); font-size: 14px; font-style: italic; margin: 0 0 14px; }
+  .asof b { font-style: normal; font-weight: 400; color: var(--ink); }
+
+  .seal { position: absolute; top: 8px; right: -6px; width: 108px; height: 108px;
+    color: var(--green); transform: rotate(-9deg); opacity: .8; mix-blend-mode: multiply;
+    animation: stamp .55s .6s cubic-bezier(.2,1.6,.4,1) both; pointer-events: none; }
+  .seal text { fill: currentColor; font-family: var(--mono); }
+  @media (max-width: 680px) { .seal { position: static; display: block; margin: 4px auto -14px; transform: rotate(-6deg) scale(.8); } }
+
+  /* ---- Net worth: the statement figure ---- */
+  .hero { text-align: center; border-top: 1px solid var(--ink); border-bottom: 3px double var(--ink);
+    padding: 22px 12px 24px; margin-bottom: 16px; background: var(--green-soft);
+    animation: rise .7s .14s both; }
+  .hero .lbl { font-size: 12px; letter-spacing: .3em; text-transform: uppercase; color: var(--green); text-indent: .3em; }
+  .hero .val { font: 500 clamp(38px, 8vw, 52px)/1.15 var(--mono); letter-spacing: -.03em;
+    color: var(--green); margin: 6px 0 4px; }
+  .hero .sub { font-size: 14px; font-style: italic; color: var(--muted); }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 8px;
+    animation: rise .7s .22s both; }
+  .tile { border: 1px solid var(--line-strong); padding: 14px 18px 15px; background: var(--paper); }
+  .tile .lbl { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); text-indent: .22em; }
+  .tile .val { font: 500 24px/1.3 var(--mono); letter-spacing: -.02em; margin-top: 4px; }
+  .tile .sub { font-size: 13px; font-style: italic; color: var(--muted); margin-top: 1px; }
+  .tile.reserved { background: var(--gold-soft); border-color: var(--gold); border-style: dashed; }
+  .tile.reserved .lbl, .tile.reserved .val { color: var(--gold); }
+
+  section { animation: rise .7s .3s both; }
+  h2 { font: 400 15px/1.3 var(--serif); letter-spacing: .26em; text-transform: uppercase;
+    text-indent: .26em; text-align: center; margin: 38px 0 6px; }
+  h2::after { content: ''; display: block; margin: 8px auto 0; border-top: 1px solid var(--ink); }
+  .grp { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint);
+    margin: 16px 0 2px; }
+  .row { display: flex; align-items: baseline; gap: 10px; padding: 8.5px 2px; }
+  .row .name { flex: none; max-width: 62%; }
+  .row .lead { flex: 1; border-bottom: 1px dotted var(--line-strong); transform: translateY(-4px); min-width: 24px; }
+  .row .amt { font: 500 15.5px/1.4 var(--mono); letter-spacing: -.01em; }
+  .row .amt.neg { color: var(--rust); }
+  .subtotal { display: flex; gap: 10px; align-items: baseline; padding: 11px 2px;
+    border-top: 1px solid var(--ink); margin-top: 4px; }
+  .subtotal .name { flex: none; font-style: italic; }
+  .subtotal .lead { flex: 1; }
+  .subtotal .amt { font: 500 16px/1.4 var(--mono); border-bottom: 3px double var(--ink); }
+
+  /* ---- Margin note ---- */
+  .callout { margin-top: 36px; padding: 16px 20px 16px 52px; position: relative;
+    background: var(--rust-soft); border-left: 3px double var(--rust); font-size: 14.5px;
+    animation: rise .7s .38s both; }
+  .callout::before { content: '☞'; position: absolute; left: 18px; top: 13px;
+    font-size: 22px; color: var(--rust); }
+  .callout .h { font-style: italic; font-weight: 500; color: var(--rust); margin-bottom: 4px; }
+
+  .foot { margin-top: 46px; text-align: center; font-size: 13.5px; font-style: italic;
+    color: var(--muted); animation: rise .7s .44s both; }
+  .foot .rule.dbl { margin-bottom: 16px; }
+  .foot p { max-width: 60ch; margin: 0 auto; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes stamp { from { opacity: 0; transform: rotate(-9deg) scale(1.5); } to { opacity: .8; transform: rotate(-9deg) scale(1); } }
+  @media (max-width: 560px) { .split { grid-template-columns: 1fr; } .row .name { max-width: 55%; } }
+  @media (prefers-reduced-motion: reduce) { .mast, .hero, .split, section, .foot, .seal, .callout { animation: none; } }
+  @media print { body::before { display: none; } .wrap { padding-top: 12px; } }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <hr class="rule dbl">
+    <div class="eyebrow">__BUSINESS_NAME__ + Personal</div>
+    <h1>Balance Sheet</h1>
+    <p class="asof">As of <b id="asof"></b> · live bank-reported balances via Monarch (books cross-checked by bean-check)</p>
+    <hr class="rule">
+    <svg class="seal" viewBox="0 0 120 120" aria-hidden="true">
+      <defs><path id="sealArc" d="M60,60 m-43,0 a43,43 0 1,1 86,0 a43,43 0 1,1 -86,0"/></defs>
+      <circle cx="60" cy="60" r="55" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="60" cy="60" r="52.5" fill="none" stroke="currentColor" stroke-width=".6"/>
+      <circle cx="60" cy="60" r="30" fill="none" stroke="currentColor" stroke-width=".8"/>
+      <text font-size="9.6" letter-spacing="2.4"><textPath href="#sealArc">LIVE BANK BALANCES · LEDGER CROSS-CHECKED ·</textPath></text>
+      <text x="60" y="64" text-anchor="middle" font-size="17" font-family="Iowan Old Style, Georgia, serif" font-style="italic">verified</text>
+    </svg>
+  </header>
+
+  <div class="hero">
+    <div class="lbl">Net Worth</div>
+    <div class="val" id="nw"></div>
+    <div class="sub" id="nwsub"></div>
+  </div>
+
+  <div class="split">
+    <div class="tile"><div class="lbl">Liquid Cash</div><div class="val" id="liquid"></div><div class="sub">spendable, across all bank accounts</div></div>
+    <div class="tile reserved"><div class="lbl">Tax Reserve</div><div class="val" id="reserved"></div><div class="sub">set aside for taxes — not spendable</div></div>
+  </div>
+
+  <section>
+    <h2>Assets</h2>
+    <div class="grp">Liquid cash</div>
+    <div id="a-liquid"></div>
+    <div class="grp">Investments</div>
+    <div id="a-invest"></div>
+    <div class="subtotal"><span class="name">Total assets</span><span class="lead"></span><span class="amt" id="ta"></span></div>
+  </section>
+
+  <section>
+    <h2>Liabilities</h2>
+    <div id="liabs"></div>
+    <div class="subtotal"><span class="name">Total liabilities</span><span class="lead"></span><span class="amt" id="tl"></span></div>
+  </section>
+
+  <div class="callout" id="callout"></div>
+
+  <footer class="foot">
+    <hr class="rule dbl">
+    <p>Net worth excludes the tax reserve (shown separately as committed cash, per house rule).
+    Investment figures are live account values including unrealized gains. Credit-card figures are balances owed.
+    Sole-proprietor
+    Schedule&nbsp;C has no balance-sheet filing requirement; this is for net-worth visibility only.</p>
+  </footer>
+</div>
+
+<script>
+const D = /*__DATA__*/;
+const usd = n => (n < 0 ? '−' : '') + new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(Math.abs(n));
+const usd0 = n => (n < 0 ? '−' : '') + new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(Math.abs(n));
+
+document.getElementById('asof').textContent = new Date(D.asof + 'T16:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+document.getElementById('nw').textContent = usd(D.net_worth);
+document.getElementById('nwsub').textContent = `${usd0(D.invest)} in investments · ${usd0(D.liquid)} cash · ${usd0(D.total_liab)} card debt`;
+document.getElementById('liquid').textContent = usd(D.liquid);
+document.getElementById('reserved').textContent = usd(D.reserved);
+document.getElementById('ta').textContent = usd(D.total_assets);
+document.getElementById('tl').textContent = usd(D.total_liab);
+
+const rowHTML = (n, v) => `<div class="row"><span class="name">${n}</span><span class="lead"></span><span class="amt${v < 0 ? ' neg' : ''}">${usd(v)}</span></div>`;
+document.getElementById('a-liquid').innerHTML = D.assets.filter(a => a[2] === 'liquid').sort((x, y) => y[1] - x[1]).map(a => rowHTML(a[0], a[1])).join('');
+document.getElementById('a-invest').innerHTML = D.assets.filter(a => a[2] === 'invest').map(a => rowHTML(a[0], a[1])).join('');
+document.getElementById('liabs').innerHTML = D.liabilities.sort((x, y) => y[1] - x[1]).map(l => rowHTML(l[0], l[1])).join('');
+
+const pctInvest = D.total_assets ? Math.round(D.invest / D.total_assets * 100) : 0;
+// Next quarterly estimate after the as-of date (Apr 15 / Jun 15 / Sep 15 / Jan 15).
+const asof = new Date(D.asof + 'T12:00:00'), y = asof.getFullYear();
+const next = [[y, 3, 15, 'Q1'], [y, 5, 15, 'Q2'], [y, 8, 15, 'Q3'], [y + 1, 0, 15, 'Q4']]
+  .map(([yy, m, d, q]) => ({ q, date: new Date(yy, m, d) })).find(c => c.date >= asof);
+const dueTxt = next.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+// D.tax comes from the latest YTD P&L (null if it couldn't be parsed): then the page
+// states the reserve balance only and makes no sufficiency claim.
+let reserveNote = `The tax reserve holds ${usd0(D.reserved)}; the next estimate (${next.q}) is due ${dueTxt}.`;
+if (D.tax) {
+  const T = D.tax, R = D.reserved;
+  const thru = new Date(T.through + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  reserveNote = (T.safe_harbor_q ? `The tax reserve (${usd0(R)}) ${R >= T.safe_harbor_q ? 'covers' : `is ${usd0(T.safe_harbor_q - R)} short of`} the ${next.q} estimate due ${dueTxt} (safe-harbor amount ${usd0(T.safe_harbor_q)}). ` : `The tax reserve holds ${usd0(R)}; the next estimate (${next.q}) is due ${dueTxt}. `)
+    + (T.unpaid <= 0
+      ? `Per the YTD P&L through ${thru}, estimates paid already cover all ${T.through.slice(0, 4)} tax accrued so far.`
+      : `Per the YTD P&L through ${thru}, ${usd0(T.unpaid)} of ${T.through.slice(0, 4)} tax is accrued but not yet paid: `
+        + (R >= T.unpaid ? `the reserve covers it with ${usd0(R - T.unpaid)} left over.` : `the reserve is ${usd0(T.unpaid - R)} short of that.`));
+}
+const skimTxt = D.skim ? ` The ${Math.round(D.skim * 100)}% topline tax skim lands in the tax reserve, never the brokerage.` : '';
+document.getElementById('callout').innerHTML =
+  `<div class="h">Liquidity &amp; concentration</div>${pctInvest}% of assets sit in investment accounts — volatile, and your de-facto savings. Only ${usd0(D.liquid)} is actually spendable cash. ${reserveNote}${skimTxt}`;
+</script>

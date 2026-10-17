@@ -1,0 +1,121 @@
+====================================================================
+   DEMO STUDIO LLC
+   PROFIT & LOSS STATEMENT
+   Q3 (Jul–Sep)  —  2026-07-01 to 2026-09-30
+====================================================================
+
+  REVENUE
+  ----------------------------------------------------------------
+    Product Sales (Stripe)                     $  24,582.36
+    YouTube AdSense                            $   3,307.97
+  GROSS REVENUE                                $  27,890.33
+
+  OPERATING EXPENSES (deductible)
+  ----------------------------------------------------------------
+    Contract Labor                             $   2,899.86
+    Equipment & Technology                     $   1,899.00
+    Advertising                                $   1,387.07
+    Home Office (10.00% of rent+utilities)     $     584.80
+    Software & Subscriptions                   $     284.94
+    Phone (business use)                       $     178.50
+    Meals (50% deductible)                     $      46.62
+  ----------------------------------------------------------------
+  TOTAL DEDUCTIBLE EXPENSES                    $   7,280.79
+
+  ================================================================
+  NET PROFIT                                   $  20,609.54
+  ================================================================
+  Profit Margin                                       73.9%
+
+
+  HOME OFFICE DEDUCTION (10.00% business-use share)
+  ----------------------------------------------------------------
+    Rent                     $  5,400.00 x 10.00% = $   540.00
+    Gas & Electric           $    448.03 x 10.00% = $    44.80
+  ----------------------------------------------------------------
+  HOME OFFICE DEDUCTION                        $     584.80
+
+
+  BUSINESS EXPENSES PAID ON PERSONAL CARDS
+  ----------------------------------------------------------------
+    2026-07-14  Verizon (70% biz)              $   59.50
+    2026-07-16  Canva                          $   14.99
+    2026-08-14  Verizon (70% biz)              $   59.50
+    2026-08-16  Canva                          $   14.99
+    2026-09-14  Verizon (70% biz)              $   59.50
+    2026-09-16  Canva                          $   14.99
+  ----------------------------------------------------------------
+  TOTAL PERSONAL-CARD BUSINESS EXPENSES        $     223.47
+
+
+  MONTHLY SUMMARY
+  ----------------------------------------------------------------
+  Month           Revenue     Expenses          Net   Margin
+  ---------- ------------ ------------ ------------ --------
+  2026-07    $     8,874 $     3,700 $     5,174   58.3%
+  2026-08    $     9,854 $     1,303 $     8,551   86.8%
+  2026-09    $     9,162 $     1,469 $     7,693   84.0%
+
+
+  TAX LIABILITY — Q3 (JUL–SEP)
+  ----------------------------------------------------------------
+    Net profit this period                     $  20,609.54
+    Annualized net profit                      $  81,766.10
+    Projected SE tax (annual)                  $  11,553.18
+    Projected federal income tax (annual)      $   5,501.39
+    QBI deduction (annual)                     $  11,977.90
+    Projected TOTAL 2026 tax                   $  17,054.57
+    Effective rate on net profit                      20.9%
+  ----------------------------------------------------------------
+  TAX ACCRUED THIS PERIOD (owed so far)        $   4,298.69
+
+    Prior-year safe harbor (per quarter)       $   3,500.00
+      (100% of 2025 total tax / 4)            
+
+
+  AFTER-TAX OWNER EARNINGS — Q3 (JUL–SEP)
+  ----------------------------------------------------------------
+    Net profit this period                     $  20,609.54
+    Less: tax accrued this period              $-  4,298.69
+  ----------------------------------------------------------------
+  WHAT YOU KEEP (after-tax)                    $  16,310.85
+    Average per month                          $   5,396.76
+
+    Estimates paid in this period              $   3,500.00
+    Accrued, not yet paid (hold in bucket)     $     798.69
+
+
+  TOP 10 VENDORS BY SPEND
+  ----------------------------------------------------------------
+    Upwork Editor                              $   2,899.86
+    B&H Photo                                  $   1,899.00
+    Meta Ads                                   $   1,387.07
+    ATM Withdrawal                             $     200.00
+    Adobe                                      $     179.97
+    Chipotle                                   $      93.24
+    OpenAI                                     $      60.00
+
+
+  NON-DEDUCTIBLE (excluded from expenses above)
+  ----------------------------------------------------------------
+    UNMAPPED: Cash & ATM (review)              $     200.00
+    Restaurants & Bars (non-deductible portion) $      46.62
+  TOTAL NON-DEDUCTIBLE                         $     246.62
+
+
+  REVIEW — UNMAPPED CATEGORIES (not deducted; map or recategorize)
+  ----------------------------------------------------------------
+    REVIEW 2026-08-30  $   -200.00  ATM Withdrawal             [Cash & ATM]
+
+
+  VERIFICATION (business CSV reconciliation)
+  ----------------------------------------------------------------
+    Business CSV expenses (raw)                $   6,719.14
+    Deductible, net of credits                 $   6,472.52
+    Credits received (add back)                $       0.00
+    Non-deductible                             $     246.62
+    Refunds (revenue line)                     $       0.00
+    Difference (should be ~0)                  $       0.00
+
+    Home office (from personal CSV)            $     584.80
+    Personal-card business (separate)          $     223.47

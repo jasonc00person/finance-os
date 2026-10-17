@@ -1,0 +1,167 @@
+# DEMO books (fake data). Run any script with FINANCE_HOME=demo.
+# Finance OS config. Everything specific to YOUR business lives here; the scripts read it.
+# The `setup` skill fills this in with you. Category names must match Monarch exactly.
+
+[business]
+name = "Demo Studio LLC"
+owner = "Demo Owner"
+entity = "single-member LLC, taxed as a sole proprietorship (Schedule C)"
+state = "TX"
+year = 2026                 # default year the scripts work on
+frozen_years = []           # filed years: CSVs/P&Ls never regenerated without --force-frozen
+
+[tax]
+filing_status = "single"    # single | mfj
+state_rate = 0.0            # flat effective state income-tax estimate on net profit (0 for TX/FL/etc.)
+skim_rate = 0.25            # % of topline revenue auto-moved to the tax account (0 if you don't skim)
+
+[tax.years.2026]
+prior_year_total_tax = 14000    # last year's Form 1040 line 24 -> safe-harbor estimates (0 = unknown)
+estimates_paid = [["2026-04-15", 3500.00], ["2026-06-15", 3500.00], ["2026-09-15", 3500.00]]  # [["2026-04-15", 5000.00], ...] payments TOWARD this tax year only
+retirement_contrib = 0      # funded PRE-TAX Solo 401(k)/SEP contributions (Roth never counts)
+other_income = 0            # spouse W-2 / other taxable income (mfj); only the business's share of tax is accrued
+
+[artifacts]                 # filled after the first publish so later closes update the same page
+pl_page_url = ""
+balance_sheet_url = ""
+
+# ---- Accounts ----
+# match:  Monarch account name. "(...1234)" matches the END of the name (rename-proof);
+#         anything else matches the START. Run `.venv/bin/python scripts/monarch.py accounts`.
+# side:   business | personal  (which CSV the rows go to; business rows drive the P&L)
+# ledger: beancount account (Assets:Biz:*, Assets:Per:*, Liabilities:Biz:*, Liabilities:Per:*, Assets:TaxBucket:*)
+# balance_sheet: liquid | invest | liability | reserved (tax bucket, excluded from net worth) | skip
+# export = false: on the balance sheet only, never exported (brokerage, 401k, pods)
+
+[[accounts]]
+match = "(...1111)"
+label = "Business Checking (1111)"
+side = "business"
+ledger = "Assets:Biz:Checking"
+balance_sheet = "liquid"
+
+[[accounts]]
+match = "(...2222)"
+label = "Business Credit Card (2222)"
+side = "business"
+ledger = "Liabilities:Biz:CreditCard"
+balance_sheet = "liability"
+
+[[accounts]]
+match = "(...3333)"
+label = "Personal Checking (3333)"
+side = "personal"
+ledger = "Assets:Per:Checking"
+balance_sheet = "liquid"
+
+[[accounts]]
+match = "(...4444)"
+label = "Tax Savings (4444)"
+side = "personal"
+ledger = "Assets:TaxBucket:Savings"
+balance_sheet = "reserved"
+
+[[accounts]]
+match = "(...5555)"
+label = "Personal Credit Card (5555)"
+side = "personal"
+ledger = "Liabilities:Per:CreditCard"
+balance_sheet = "liability"
+
+[[accounts]]
+match = "(...6666)"
+label = "Brokerage (6666)"
+side = "personal"
+ledger = "Assets:External:Brokerage"
+balance_sheet = "invest"
+export = false
+
+# ---- Revenue ----
+# Business-account Income rows are matched (case-insensitive) on merchant + statement text,
+# first hit wins. Unmatched income lands in "Other Revenue": add a keyword when you see it.
+[[revenue]]
+keyword = "STRIPE"
+line = "Product Sales (Stripe)"
+
+[[revenue]]
+keyword = "YOUTUBE"
+line = "YouTube AdSense"
+
+[[revenue]]
+keyword = "GOOGLE"
+line = "YouTube AdSense"
+
+# Income-typed rows that are NOT revenue: gifts, owner money in, transfers between your own banks.
+revenue_exclude = ["remote online deposit", "transfer from"]
+# A payer who pays two kinds of revenue on one rail: [date, amount, line].
+revenue_date_overrides = []
+
+# ---- Categories (Monarch names) ----
+[categories]
+transfer = ["Transfer", "Credit Card Payment", "Balance Adjustments"]   # plus any transfer-type group
+income = ["Business Income", "Interest", "Other Income", "Paychecks"]   # plus any income-type group
+refunds = ["Refunds"]          # client refunds: revenue line 2, not an expense
+business_group = "Business"    # a personal-card row in this Monarch group is a business deduction
+non_deductible = ["Taxes", "Groceries", "Shopping", "Clothing", "Entertainment & Recreation",
+  "Personal", "Fitness", "Medical", "Dentist", "Gifts", "Charity", "Pets", "Fun Money",
+  "Furniture & Housewares", "Mortgage", "Gas & Electric", "Water", "Garbage", "Home Improvement",
+  "Auto Payment", "Auto Maintenance", "Car Insurance", "Gas",
+  "Business Auto Expenses", "Loan Repayment", "Student Loans"]
+# ^ Car costs are non-deductible under the standard mileage method: the deduction comes from
+#   the mileage log. Cash & ATM / Check are left OUT on purpose so they hit REVIEW until identified.
+
+# Business-account category -> [Schedule C line, deductible fraction]. Applies to BUSINESS accounts
+# (and to personal-card rows in the business group). On personal accounts these stay personal.
+# Anything on a business account that is in neither list goes to the P&L REVIEW block.
+[categories.deductible]
+"Advertising & Promotion" = ["Advertising", 1.0]
+"Business Utilities & Communication" = ["Utilities", 1.0]
+"Employee Wages & Contract Labor" = ["Contract Labor", 1.0]
+"Business Travel & Meals" = ["Travel", 1.0]
+"Business Insurance" = ["Insurance", 1.0]
+"Office Supplies & Expenses" = ["Office Expense", 1.0]
+"Office Rent" = ["Rent or Lease", 1.0]
+"Postage & Shipping" = ["Office Expense", 1.0]
+"Software & AI Tools" = ["Software & Subscriptions", 1.0]
+"Electronics" = ["Equipment & Technology", 1.0]
+"Financial & Legal Services" = ["Legal & Professional Services", 1.0]
+"Financial Fees" = ["Bank & Service Fees", 1.0]
+"Education" = ["Education & Training", 1.0]
+"Restaurants & Bars" = ["Meals (50% deductible)", 0.5]
+"Coffee Shops" = ["Meals (50% deductible)", 0.5]
+"Travel & Vacation" = ["Travel", 1.0]
+"Rent" = ["Rent or Lease", 1.0]
+"Phone" = ["Utilities", 1.0]
+"Internet & Cable" = ["Utilities", 1.0]
+"Parking & Tolls" = ["Travel", 1.0]
+"Taxi & Ride Shares" = ["Travel", 1.0]
+"Miscellaneous" = ["Other Business Expenses", 1.0]
+
+# ---- Home office (regular + exclusive use; IRC 280A) ----
+[home_office]
+pct = 0.10    # office sqft / your share of the home's sqft, e.g. 120 / 1200 = 0.10. 0 = no home office.
+categories = ["Rent", "Mortgage", "Gas & Electric", "Water", "Garbage"]   # personal-side rows that form the pool
+
+# ---- Business spend on personal cards ----
+[personal_card]
+exclude_group_categories = ["Refunds", "Business Auto Expenses", "Office Rent"]   # never auto-deducted from personal cards
+oneoffs = []        # [["2026-03-04", "delta", 1.0, "Travel"]]  date-pinned, substantiated in audit-notes.md
+[personal_card.saas]        # vendor substring -> line (100% business)
+"canva" = "Software & Subscriptions"
+[personal_card.partial]     # vendor substring -> [business-use fraction, line]; keep a usage log
+"verizon" = [0.70, "Phone (business use)"]
+
+# ---- Rules ----
+[rules]
+force_transfer_merchants = []        # Monarch merchant names whose category is display-only: treat as Transfer
+contractor_markers = []              # statement-text substrings marking contractor pay ("for editing services")
+business_tax_markers = ["franchise tax", "comptroller", "secretary of state"]   # 'Taxes' rows on business accounts that ARE deductible
+personal_oneoffs = []                # [["2026-04-21", "zelle payment to x"]] personal spend paid from a business account
+
+# ---- Ledger (beancount audit layer) ----
+[ledger]
+overrides = [["USATAXPYMT", "Equity:Draws:FederalTax"], ["IRS TREAS", "Equity:Draws:FederalTax"]]
+date_amount_overrides = []           # [["2026-04-22", -8500, "Assets:TaxBucket:Savings"]]
+known_dupes = []                     # [["2026-03-18", "Golds Gym", -37.88, 1]]  rows to KEEP of a confirmed duplicate
+[ledger.untracked]                   # transfer text keyword -> account Monarch doesn't export
+"brokerage" = "Assets:External:Brokerage"

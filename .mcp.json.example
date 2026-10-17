@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sequence": {
+      "command": "node",
+      "args": ["tools/sequence-mcp/dist/index.js"]
+    }
+  }
+}

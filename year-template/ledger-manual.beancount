@@ -1,0 +1,7 @@
+; Hand-maintained flows Monarch can't see (IRS payments from an unconnected account,
+; brokerage-internal journals). csv_to_beancount.py appends this file to the ledger.
+; Tag entries #manual when they post a personal expense so the tie-out counts them.
+;
+; 2026-04-15 * "IRS Direct Pay" "Q1 estimated tax (confirmation 1234...)"
+;   Assets:TaxBucket:Savings  -5000.00 USD
+;   Equity:Draws:FederalTax

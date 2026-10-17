@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "reports", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "5023", "--bind", "127.0.0.1", "-d", "2026"], "port": 5023 },
+    { "name": "fava", "runtimeExecutable": ".venv/bin/fava", "runtimeArgs": ["--port", "5013", "2026/ledger.beancount"], "port": 5013 }
+  ]
+}

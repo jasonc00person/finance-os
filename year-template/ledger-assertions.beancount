@@ -1,0 +1,7 @@
+; Dated real-world balances (from `monarch.py accounts`). bean-check FAILS if the books drift.
+; Add a block at every close. A balance checks the START of its date. Liabilities are negative.
+; Accounts that existed before Jan 1 get a one-time pad from Equity:OpeningBalances first.
+;
+; 2026-01-01 pad Assets:Biz:Checking Equity:OpeningBalances
+; 2026-10-01 balance Assets:Biz:Checking        4570.41 USD
+; 2026-10-01 balance Liabilities:Biz:CreditCard  -232.19 USD

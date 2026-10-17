@@ -1,0 +1,14 @@
+.env
+.venv/
+.mm/
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+tools/sequence-mcp/dist/
+sequence-snapshots/
+*backup-codes*
+*recovery-codes*
+# Owner documents: keep IDs, signatures and signed forms out of git
+ids/
+entity/signature*

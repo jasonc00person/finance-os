@@ -1,0 +1,298 @@
+<meta charset="utf-8">
+<title>__BUSINESS_NAME__ P&L</title>
+<style>
+  :root {
+    --paper: #F6F2E8; --paper-deep: #EFEADC; --ink: #211E16; --muted: #7B7360;
+    --faint: #A39A83; --green: #1B4D3B; --green-soft: #E7EDE5; --rust: #8E3B2C;
+    --gold: #8A6A1F; --line: #DDD5C2; --line-strong: #B9AE93; --hair: #CFC6AE;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body { background: var(--paper); color: var(--ink); margin: 0; }
+  body::before {  /* paper grain */
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 3; opacity: .5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .41 0 0 0 0 .33 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 46px 24px 80px;
+    font: 400 16.5px/1.6 var(--serif); }
+
+  /* ---- Masthead: typeset statement head ---- */
+  .mast { position: relative; text-align: center; margin-bottom: 10px;
+    animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+  .rule { border: 0; border-top: 1px solid var(--ink); margin: 0; }
+  .rule.dbl { border-top: 3px double var(--ink); }
+  .mast .rule { transform-origin: center; animation: draw .9s cubic-bezier(.2,.7,.2,1) both; }
+  .eyebrow { font-size: 12.5px; letter-spacing: .34em; text-transform: uppercase;
+    color: var(--muted); margin: 14px 0 2px; text-indent: .34em; }
+  h1 { font: 400 clamp(34px, 7vw, 46px)/1.12 var(--serif); margin: 2px 0 4px;
+    letter-spacing: .01em; text-wrap: balance; }
+  h1 .amp { font-style: italic; color: var(--green); }
+  .period { font: 400 italic clamp(22px, 4.4vw, 28px)/1.2 var(--serif); color: var(--green); margin: 0 0 6px; }
+  .asof { color: var(--muted); font-size: 14px; font-style: italic; margin: 0 0 14px; }
+  .asof b { font-style: normal; font-weight: 400; color: var(--ink); }
+
+  /* ---- Auditor's seal ---- */
+  .seal { position: absolute; top: 8px; right: -6px; width: 112px; height: 112px;
+    color: var(--green); transform: rotate(-9deg); opacity: .8; mix-blend-mode: multiply;
+    animation: stamp .55s .65s cubic-bezier(.2,1.6,.4,1) both; pointer-events: none; }
+  .seal text { fill: currentColor; font-family: var(--mono); }
+  @media (max-width: 700px) { .seal { position: static; display: block; margin: 6px auto -18px; transform: rotate(-6deg) scale(.82); } }
+
+  /* ---- Period selector: editorial index ---- */
+  .chips { display: flex; flex-wrap: nowrap; gap: 2px 12px; justify-content: safe center;
+    overflow-x: auto; scrollbar-width: none;
+    margin: 20px 0 30px; animation: rise .7s .12s both; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; }
+  .chips .sep { width: 1px; align-self: stretch; background: var(--hair); margin: 2px 2px; }
+  .chip { font: 500 12.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted); background: none; border: 0; padding: 8px 2px 6px; cursor: pointer;
+    border-bottom: 2px solid transparent; }
+  .chip:hover { color: var(--green); border-bottom-color: var(--hair); }
+  .chip.on { color: var(--green); border-bottom-color: var(--green); }
+  .chip:focus-visible, .row:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+  /* ---- Summary: statement block ---- */
+  .summary { display: grid; grid-template-columns: 1fr 1fr 1.25fr; margin: 0 0 40px;
+    border-top: 1px solid var(--ink); border-bottom: 3px double var(--ink);
+    animation: rise .7s .2s both; }
+  .sumcard { padding: 14px 18px 16px; }
+  .sumcard + .sumcard { border-left: 1px dotted var(--line-strong); }
+  .sumcard .lbl { font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); text-indent: .22em; }
+  .sumcard .val { font: 500 clamp(21px, 3.4vw, 27px)/1.25 var(--mono); letter-spacing: -.02em; margin-top: 4px; }
+  .sumcard.net { background: var(--green-soft); }
+  .sumcard.net .lbl, .sumcard.net .val { color: var(--green); }
+  .sumcard .sub { font-size: 13px; font-style: italic; color: var(--muted); margin-top: 2px; }
+
+  /* ---- Sections & leader-dot rows ---- */
+  section { animation: rise .7s .28s both; }
+  h2 { font: 400 15px/1.3 var(--serif); letter-spacing: .26em; text-transform: uppercase;
+    text-indent: .26em; text-align: center; margin: 40px 0 8px; color: var(--ink); }
+  h2::after { content: ''; display: block; margin: 8px auto 0; width: 100%;
+    border-top: 1px solid var(--ink); }
+  .row { display: flex; align-items: baseline; gap: 10px; width: 100%;
+    background: none; border: 0; padding: 10px 2px 9px; font: inherit; color: inherit;
+    text-align: left; cursor: pointer; }
+  .row .caret { font: 500 13px/1 var(--mono); color: var(--faint); width: 14px; flex: none; }
+  .row:hover .caret, .row.open .caret { color: var(--green); }
+  .row .name { flex: none; max-width: 62%; }
+  .row:hover .name { color: var(--green); }
+  .row .count { color: var(--faint); font: 400 11.5px/1 var(--mono); letter-spacing: .06em; flex: none; }
+  .row .lead { flex: 1; border-bottom: 1px dotted var(--line-strong); transform: translateY(-4px); min-width: 24px; }
+  .row .amt, .total .amt, .txn .a { font: 500 15.5px/1.4 var(--mono); letter-spacing: -.01em; }
+  .total { display: flex; gap: 10px; align-items: baseline; padding: 11px 2px;
+    border-top: 1px solid var(--ink); margin-top: -1px; }
+  .total .name { font-style: italic; }
+  .total .lead { flex: 1; }
+  .total .amt { border-bottom: 3px double var(--ink); }
+
+  .detail { display: none; margin: 0 0 2px 24px; padding: 2px 0 12px;
+    border-left: 1px dotted var(--line-strong); }
+  .detail.show { display: block; animation: rise .35s both; }
+  .txn { display: flex; gap: 12px; align-items: baseline; padding: 3.5px 6px 3.5px 12px; font-size: 14px; }
+  .txn:nth-child(odd) { background: var(--paper-deep); }
+  .txn .d { color: var(--muted); font: 400 12.5px/1.5 var(--mono); flex: none; width: 52px; }
+  .txn .n { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .txn .a { font-size: 13.5px; }
+  .neg { color: var(--rust); }
+
+  .total.approx { border-top: 0; padding-top: 2px; }
+  .total.approx .amt { color: var(--green); border-bottom: 0; }
+  .taxnote { font-size: 13px; font-style: italic; color: var(--muted); margin: 10px 0 0; max-width: 62ch; }
+
+  /* ---- Month table ---- */
+  table.months { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  table.months th { text-align: right; font: 500 11px/1 var(--mono); color: var(--muted);
+    letter-spacing: .18em; text-transform: uppercase; padding: 8px 4px; border-bottom: 1px solid var(--ink); }
+  table.months th:first-child, table.months td:first-child { text-align: left; }
+  table.months td { text-align: right; padding: 7.5px 4px; border-bottom: 1px dotted var(--line-strong);
+    font: 400 14.5px/1.4 var(--mono); }
+  table.months td:first-child { font: 400 15px/1.4 var(--serif); }
+  table.months tr:last-child td { border-bottom: 0; }
+  table.months td.net { color: var(--green); font-weight: 500; }
+
+  /* ---- Colophon ---- */
+  .foot { margin-top: 52px; text-align: center; font-size: 13.5px; font-style: italic;
+    color: var(--muted); animation: rise .7s .36s both; }
+  .foot .rule.dbl { margin-bottom: 16px; }
+  .foot p { max-width: 58ch; margin: 0 auto; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes stamp { from { opacity: 0; transform: rotate(-9deg) scale(1.5); } to { opacity: .8; transform: rotate(-9deg) scale(1); } }
+  @media (max-width: 560px) { .summary { grid-template-columns: 1fr; } .sumcard + .sumcard { border-left: 0; border-top: 1px dotted var(--line-strong); } .row .name { max-width: 52%; } }
+  @media (prefers-reduced-motion: reduce) { .mast, .mast .rule, .chips, .summary, section, .foot, .seal, .detail.show { animation: none; } }
+  @media print { body::before, .chips { display: none; } .wrap { padding-top: 12px; } }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <hr class="rule dbl">
+    <div class="eyebrow">__BUSINESS_NAME__</div>
+    <h1>Profit <span class="amp">&amp;</span> Loss</h1>
+    <div class="period" id="yr"></div>
+    <p class="asof"><b id="prange"></b> · business accounts only · books current through <b id="asof"></b></p>
+    <hr class="rule">
+    <svg class="seal" viewBox="0 0 120 120" aria-hidden="true">
+      <defs><path id="sealArc" d="M60,60 m-43,0 a43,43 0 1,1 86,0 a43,43 0 1,1 -86,0"/></defs>
+      <circle cx="60" cy="60" r="55" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="60" cy="60" r="52.5" fill="none" stroke="currentColor" stroke-width=".6"/>
+      <circle cx="60" cy="60" r="30" fill="none" stroke="currentColor" stroke-width=".8"/>
+      <text font-size="9.6" letter-spacing="2.1"><textPath href="#sealArc">DOUBLE-ENTRY LEDGER · RECONCILED TO ZERO ·</textPath></text>
+      <text x="60" y="64" text-anchor="middle" font-size="17" font-family="Iowan Old Style, Georgia, serif" font-style="italic">verified</text>
+    </svg>
+  </header>
+
+  <div class="chips" id="chips" role="tablist" aria-label="Reporting period"></div>
+
+  <div class="summary">
+    <div class="sumcard"><div class="lbl">Revenue</div><div class="val" id="sumRev"></div><div class="sub" id="subRev"></div></div>
+    <div class="sumcard"><div class="lbl">Expenses</div><div class="val" id="sumExp"></div><div class="sub" id="subExp"></div></div>
+    <div class="sumcard net"><div class="lbl">Net profit</div><div class="val" id="sumNet"></div><div class="sub" id="subNet"></div></div>
+  </div>
+
+  <section>
+    <h2>Revenue</h2>
+    <div id="secInc"></div>
+  </section>
+
+  <section>
+    <h2>Expenses</h2>
+    <div id="secExp"></div>
+  </section>
+
+  <section id="secTaxWrap">
+    <h2>Tax-View Deductions</h2>
+    <div id="secTax"></div>
+    <div class="total approx"><span class="name">Net profit after tax-view deductions</span><span class="lead"></span><span class="amt" id="netTax"></span></div>
+    <p class="taxnote">Deducted on Schedule&nbsp;C but paid outside the business accounts — the home-office
+    share of rent &amp; utilities, and business spend on personal cards. The books above stay untouched.
+    Exact filing math (meals at 50%, non-deductible exclusions) lives in the tax P&amp;L.</p>
+  </section>
+
+  <section>
+    <h2>Month by Month</h2>
+    <table class="months"><thead><tr><th>Month</th><th>Revenue</th><th>Expenses</th><th>Net</th></tr></thead><tbody id="months"></tbody></table>
+  </section>
+
+  <footer class="foot">
+    <hr class="rule dbl">
+    <p>Click any line to see the transactions behind it. Revenue and Expenses are the books view from
+    the double-entry ledger (business accounts only); Tax-View Deductions are the Schedule&nbsp;C items
+    paid outside them. The filing-grade tax P&amp;L — meals at 50%, non-deductible exclusions — is
+    generated at each quarterly close.</p>
+  </footer>
+</div>
+
+<script>
+const DATA = /*__DATA__*/;
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const usd = n => (n < 0 ? '−' : '') + new Intl.NumberFormat('en-US',
+  { style: 'currency', currency: 'USD' }).format(Math.abs(n));
+const mOf = r => parseInt(r.d.slice(5, 7), 10);
+
+const present = [...new Set(DATA.income.concat(DATA.expense).concat(DATA.taxonly || []).map(mOf))].sort((a, b) => a - b);
+const MNF = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const periods = present.map(m => ({ label: MN[m - 1], title: `${MNF[m - 1]} ${DATA.year}`, months: [m] }));
+const groups = [['Q1',[1,2,3]], ['Q2',[4,5,6]], ['Q3',[7,8,9]], ['Q4',[10,11,12]], ['H1',[1,2,3,4,5,6]]];
+const extra = groups.filter(([, ms]) => ms.some(m => present.includes(m)))
+  .map(([label, ms]) => ({ label, title: `${label} ${DATA.year}`, months: ms }));
+extra.push({ label: 'YTD', title: `${DATA.year} Year to Date`, months: present.slice() });
+let current = null;  // set to YTD (last chip) after allPeriods is built
+
+// Date span a period actually covers: first day of its first month through the
+// last day of its last month, cut at the books' as-of date for the open month.
+function rangeText(months) {
+  const ms = months.filter(m => present.includes(m));
+  const y = DATA.year, a = ms[0], b = ms[ms.length - 1];
+  let end = new Date(y, b, 0);
+  const asof = new Date(DATA.asof + 'T12:00:00');
+  if (end > asof) end = asof;
+  const f = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return `${f(new Date(y, a - 1, 1))} – ${f(end)}, ${y}`;
+}
+document.getElementById('asof').textContent = new Date(DATA.asof + 'T12:00:00')
+  .toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+const chipsEl = document.getElementById('chips');
+const allPeriods = periods.concat([null]).concat(extra);
+allPeriods.forEach((p, i) => {
+  if (p === null) { const s = document.createElement('span'); s.className = 'sep'; chipsEl.appendChild(s); return; }
+  const b = document.createElement('button');
+  b.className = 'chip'; b.textContent = p.label; b.setAttribute('role', 'tab');
+  b.onclick = () => { current = allPeriods.indexOf(p); render(); };
+  p.el = b; chipsEl.appendChild(b);
+});
+if (current === null) current = allPeriods.length - 1;  // default: YTD
+
+function catGroups(rows, months) {
+  const inP = rows.filter(r => months.includes(mOf(r)));
+  const by = new Map();
+  for (const r of inP) {
+    if (!by.has(r.c)) by.set(r.c, { sum: 0, txns: [] });
+    const g = by.get(r.c); g.sum += r.a; g.txns.push(r);
+  }
+  return [...by.entries()].sort((a, b) => Math.abs(b[1].sum) - Math.abs(a[1].sum));
+}
+
+function renderSection(el, rows, months) {
+  el.innerHTML = '';
+  let total = 0;
+  for (const [cat, g] of catGroups(rows, months)) {
+    total += g.sum;
+    const row = document.createElement('button');
+    row.className = 'row';
+    row.innerHTML = `<span class="caret">+</span><span class="name">${cat}</span>` +
+      `<span class="count">${g.txns.length}×</span><span class="lead"></span><span class="amt">${usd(g.sum)}</span>`;
+    const det = document.createElement('div');
+    det.className = 'detail';
+    det.innerHTML = g.txns.sort((a, b) => b.d.localeCompare(a.d)).map(t =>
+      `<div class="txn"><span class="d">${t.d.slice(5)}</span><span class="n">${t.n
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span>` +
+      `<span class="a${t.a < 0 ? ' neg' : ''}">${usd(t.a)}</span></div>`).join('');
+    row.onclick = () => {
+      const open = row.classList.toggle('open');
+      det.classList.toggle('show');
+      row.querySelector('.caret').textContent = open ? '−' : '+';
+    };
+    el.appendChild(row); el.appendChild(det);
+  }
+  const tot = document.createElement('div');
+  tot.className = 'total';
+  tot.innerHTML = `<span class="name">Total</span><span class="lead"></span><span class="amt">${usd(total)}</span>`;
+  el.appendChild(tot);
+  return total;
+}
+
+function render() {
+  const p = allPeriods[current];
+  allPeriods.forEach(q => { if (q) q.el.classList.toggle('on', q === p); });
+  document.getElementById('yr').textContent = p.title;
+  document.getElementById('prange').textContent = rangeText(p.months);
+  const rev = renderSection(document.getElementById('secInc'), DATA.income, p.months);
+  const exp = renderSection(document.getElementById('secExp'), DATA.expense, p.months);
+  const net = rev - exp;
+  const taxRows = DATA.taxonly || [];
+  document.getElementById('secTaxWrap').style.display = taxRows.length ? '' : 'none';
+  const tax = renderSection(document.getElementById('secTax'), taxRows, p.months);
+  document.getElementById('netTax').textContent = usd(net - tax);
+  document.getElementById('sumRev').textContent = usd(rev);
+  document.getElementById('sumExp').textContent = usd(exp);
+  document.getElementById('sumNet').textContent = usd(net);
+  document.getElementById('subRev').textContent = p.title;
+  document.getElementById('subExp').textContent = rev ? Math.round(exp / rev * 100) + '% of revenue' : '';
+  document.getElementById('subNet').textContent = rev ? Math.round(net / rev * 100) + '% margin' : '';
+
+  const tb = document.getElementById('months');
+  tb.innerHTML = '';
+  for (const m of present) {
+    const r = DATA.income.filter(x => mOf(x) === m).reduce((s, x) => s + x.a, 0);
+    const e = DATA.expense.filter(x => mOf(x) === m).reduce((s, x) => s + x.a, 0);
+    tb.insertAdjacentHTML('beforeend',
+      `<tr><td>${MN[m - 1]}</td><td>${usd(r)}</td><td>${usd(e)}</td><td class="net">${usd(r - e)}</td></tr>`);
+  }
+}
+render();
+</script>
